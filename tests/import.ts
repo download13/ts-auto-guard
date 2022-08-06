@@ -164,6 +164,47 @@ export function isFoo(obj: any): obj is Foo {
 }
 `,
   }),
+  genBlueprint({
+    message:
+      'non-variable names should use index accessor on extended generic interfaces',
+    inputFile: `interface Generic<T = number> {
+      "a(b)": T;
+    }
+    
+    interface NotGeneric {
+      "a(b)": string;
+    }
+    
+    export interface ExtendedGeneric extends Generic<string> {
+      "c": string;
+    }
+    
+    export interface ExtendedNotGeneric extends NotGeneric {
+      "c": string;
+    }`,
+    guardFile: `import { ExtendedGeneric, ExtendedNotGeneric } from "./ImportTest";
+
+export function isExtendedGeneric(obj: any): obj is ExtendedGeneric {
+    return (
+        (obj !== null &&
+            typeof obj === "object" ||
+            typeof obj === "function") &&
+        typeof obj["a(b)"] === "string" &&
+        typeof obj["c"] === "string"
+    )
+}
+
+export function isExtendedNotGeneric(obj: any): obj is ExtendedNotGeneric {
+    return (
+        (obj !== null &&
+            typeof obj === "object" ||
+            typeof obj === "function") &&
+        typeof obj["a(b)"] === "string" &&
+        typeof obj["c"] === "string"
+    )
+}
+`,
+  }),
 ]
 
 // Run all tests
