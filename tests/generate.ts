@@ -208,8 +208,8 @@ testProcessProject(
             (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-            typeof obj.foo === "number" &&
-            typeof obj.bar === "string"
+            typeof obj["foo"] === "number" &&
+            typeof obj["bar"] === "string"
         )
     }`,
   },
@@ -263,12 +263,12 @@ testProcessProject(
         (obj !== null &&
           typeof obj === "object" ||
           typeof obj === "function") &&
-          evaluate(typeof obj.foo === "number", \`\${argumentName}.foo\`, "number", obj.foo) &&
-          evaluate(isBar(obj.bar) as boolean, \`\${argumentName}.bar\`, "import(\\"/foo/bar/test\\").Bar", obj.bar) &&
-          evaluate(Array.isArray(obj.bars) &&
-            obj.bars.every((e: any) =>
+          evaluate(typeof obj["foo"] === "number", \`\${argumentName}["foo"]\`, "number", obj["foo"]) &&
+          evaluate(isBar(obj["bar"]) as boolean, \`\${argumentName}["bar"]\`, "import(\\"/foo/bar/test\\").Bar", obj["bar"]) &&
+          evaluate(Array.isArray(obj["bars"]) &&
+            obj["bars"].every((e: any) =>
               isBar(e) as boolean
-            ), \`\${argumentName}.bars\`, "import(\\"/foo/bar/test\\").Bar[]", obj.bars)
+            ), \`\${argumentName}["bars"]\`, "import(\\"/foo/bar/test\\").Bar[]", obj["bars"])
         )
     }
 
@@ -277,7 +277,7 @@ testProcessProject(
         (obj !== null &&
           typeof obj === "object" ||
           typeof obj === "function") &&
-          evaluate(typeof obj.bar === "number", \`\${argumentName}.bar\`, "number", obj.bar)
+          evaluate(typeof obj["bar"] === "number", \`\${argumentName}["bar"]\`, "number", obj["bar"])
         )
     }
     `,
@@ -309,8 +309,8 @@ testProcessProject(
             (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-            typeof obj.foo === "number" &&
-            typeof obj.bar === "string"
+            typeof obj["foo"] === "number" &&
+            typeof obj["bar"] === "string"
         )
     }`,
   },
@@ -343,8 +343,8 @@ testProcessProject(
             (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-            typeof obj.foo === "number" &&
-            typeof obj.bar === "string"
+            typeof obj["foo"] === "number" &&
+            typeof obj["bar"] === "string"
         )
     }`,
   }
@@ -547,8 +547,8 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.foo === "number" &&
-            typeof obj.bar === "string"
+            typeof obj["foo"] === "number" &&
+            typeof obj["bar"] === "string"
         )
     }`,
   }
@@ -575,12 +575,12 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            ( typeof obj.foo === "undefined" ||
-              typeof obj.foo === "number" ) &&
-            ( typeof obj.bar === "undefined" ||
-              typeof obj.bar === "number" ) &&
-            ( typeof obj.baz === "undefined" ||
-              typeof obj.baz === "number" )
+            ( typeof obj["foo"] === "undefined" ||
+              typeof obj["foo"] === "number" ) &&
+            ( typeof obj["bar"] === "undefined" ||
+              typeof obj["bar"] === "number" ) &&
+            ( typeof obj["baz"] === "undefined" ||
+              typeof obj["baz"] === "number" )
         )
     }`,
   }
@@ -609,10 +609,10 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            (obj.foo !== null &&
-              typeof obj.foo === "object" ||
-              typeof obj.foo === "function") &&
-            typeof obj.foo.bar === "number"
+            (obj["foo"] !== null &&
+              typeof obj["foo"] === "object" ||
+              typeof obj["foo"] === "function") &&
+            typeof obj["foo"]["bar"] === "number"
         )
     }`,
   }
@@ -642,7 +642,7 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.bar === "number"
+            typeof obj["bar"] === "number"
         )
     }
 
@@ -651,7 +651,7 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            isBar(obj.foo) as boolean
+            isBar(obj["foo"]) as boolean
         )
     }`,
   }
@@ -680,8 +680,8 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.bar === "number" &&
-            typeof obj.foo === "number"
+            typeof obj["bar"] === "number" &&
+            typeof obj["foo"] === "number"
         )
     }`,
   }
@@ -711,14 +711,14 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.bar === "number"
+            typeof obj["bar"] === "number"
         )
     }
 
     export function isFoo(obj: any): obj is Foo {
         return (
             isBar(obj) as boolean &&
-            typeof obj.foo === "number"
+            typeof obj["foo"] === "number"
         )
     }`,
   }
@@ -747,8 +747,8 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.bar === "number" &&
-            typeof obj.foo === "number"
+            typeof obj["bar"] === "number" &&
+            typeof obj["foo"] === "number"
         )
     }`,
   }
@@ -778,14 +778,14 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.bar === "number"
+            typeof obj["bar"] === "number"
         )
     }
 
     export function isFoo(obj: any): obj is Foo {
         return (
             isBar(obj) as boolean &&
-            typeof obj.foo === "number"
+            typeof obj["foo"] === "number"
         )
     }`,
   }
@@ -810,7 +810,7 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.foo === "number"
+            typeof obj["foo"] === "number"
         )
     }`,
   }
@@ -838,7 +838,7 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.foo === "number"
+            typeof obj["foo"] === "number"
         )
     }`,
   }
@@ -864,7 +864,7 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-            typeof obj.foo === "number"
+            typeof obj["foo"] === "number"
         )
     }`,
   },
@@ -921,7 +921,7 @@ testProcessProject(
             (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-          typeof obj.value === "string"
+          typeof obj["value"] === "string"
           )
       }
 
@@ -937,8 +937,8 @@ testProcessProject(
          (obj !== null &&
               typeof obj === "object" ||
               typeof obj === "function") &&
-         isPropertyValueType(obj.name) as boolean &&
-         isPropertyValueType(obj.value) as boolean
+         isPropertyValueType(obj["name"]) as boolean &&
+         isPropertyValueType(obj["value"]) as boolean
        )
      }
     `,
@@ -980,8 +980,8 @@ testProcessProject(
             (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-                Array.isArray(obj.branches) &&
-                obj.branches.every((e: any) =>
+                Array.isArray(obj["branches"]) &&
+                obj["branches"].every((e: any) =>
                     isBranch2(e) as boolean
                 ))
         )
@@ -993,8 +993,8 @@ testProcessProject(
                 (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-                Array.isArray(obj.branches) &&
-                obj.branches.every((e: any) =>
+                Array.isArray(obj["branches"]) &&
+                obj["branches"].every((e: any) =>
                     isBranch3(e) as boolean
                 ) ||
                 Array.isArray(obj) &&
@@ -1002,7 +1002,7 @@ testProcessProject(
                     (e !== null &&
                       typeof e === "object" ||
                       typeof e === "function")  &&
-                    isBranch3(e.branches) as boolean
+                    isBranch3(e["branches"]) as boolean
                 ))
         )
     }`,
@@ -1026,13 +1026,13 @@ testProcessProject(
             ((obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-                obj.type === "a" &&
-                typeof obj.value === "number" ||
+                obj["type"] === "a" &&
+                typeof obj["value"] === "number" ||
                 (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-                obj.type === "b" &&
-                typeof obj.value === "string")
+                obj["type"] === "b" &&
+                typeof obj["value"] === "string")
             )
     }`,
   },
@@ -1096,15 +1096,15 @@ testProcessProject(
               (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-              (obj.room !== null &&
-                  typeof obj.room === "object" ||
-                  typeof obj.room === "function") &&
-              (typeof obj.room["1"] === "undefined" ||
-                  typeof obj.room["1"] === "string") &&
-              (typeof obj.room["2"] === "undefined" ||
-                  typeof obj.room["2"] === "string") &&
-              (typeof obj.room["3"] === "undefined" ||
-                  typeof obj.room["3"] === "string")
+              (obj["room"] !== null &&
+                  typeof obj["room"] === "object" ||
+                  typeof obj["room"] === "function") &&
+              (typeof obj["room"]["1"] === "undefined" ||
+                  typeof obj["room"]["1"] === "string") &&
+              (typeof obj["room"]["2"] === "undefined" ||
+                  typeof obj["room"]["2"] === "string") &&
+              (typeof obj["room"]["3"] === "undefined" ||
+                  typeof obj["room"]["3"] === "string")
           )
       }`,
   },
@@ -1130,7 +1130,7 @@ testProcessProject(
               (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-              Array.isArray(obj.value)
+              Array.isArray(obj["value"])
           )
       }`,
   },
@@ -1158,13 +1158,13 @@ testProcessProject(
                 (obj !== null &&
                     typeof obj === "object" ||
                     typeof obj === "function") &&
-                Array.isArray(obj.value) &&
-                obj.value.every((e: any) =>
+                Array.isArray(obj["value"]) &&
+                obj["value"].every((e: any) =>
                     (e !== null &&
                         typeof e === "object" ||
                         typeof e === "function") &&
-                    Array.isArray(e.value) &&
-                    e.value.every((e: any) =>
+                    Array.isArray(e["value"]) &&
+                    e["value"].every((e: any) =>
                         typeof e === "number"
                     )
                 )
@@ -1285,8 +1285,8 @@ testProcessProject(
                 (obj !== null &&
                     typeof obj === "object" ||
                     typeof obj === "function") &&
-                (typeof obj.someKey === "string" ||
-                    typeof obj.someKey === "number")
+                (typeof obj["someKey"] === "string" ||
+                    typeof obj["someKey"] === "number")
             )
         }
         `,
@@ -1315,8 +1315,8 @@ testProcessProject(
               (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-              (obj.someKey === "some" ||
-                  obj.someKey === "key") &&
+              (obj["someKey"] === "some" ||
+                  obj["someKey"] === "key") &&
               Object.entries<any>(obj)
                   .filter(([key]) => !["someKey"].includes(key))
                   .every(([key, value]) => ((value === "string" ||
@@ -1505,10 +1505,10 @@ testProcessProject(
               (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-              typeof obj.test === "function" &&
-              typeof obj.test3 === "function" &&
-              typeof obj.test3.test3Arg === "number" &&
-              typeof obj.test2 === "function"
+              typeof obj["test"] === "function" &&
+              typeof obj["test3"] === "function" &&
+              typeof obj["test3"]["test3Arg"] === "number" &&
+              typeof obj["test2"] === "function"
           )
       }
     `,
@@ -1535,7 +1535,7 @@ testProcessProject(
       export function isTestType(obj: any): obj is TestType {
           return (
               typeof obj === "function" &&
-              typeof obj.arg === "number"
+              typeof obj["arg"] === "number"
           )
       }
     `,
@@ -1559,11 +1559,11 @@ testProcessProject(
             (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-                typeof obj.foo === "number" &&
+                typeof obj["foo"] === "number" &&
                 (obj !== null &&
                   typeof obj === "object" ||
                   typeof obj === "function") &&
-                typeof obj.bar === "string"
+                typeof obj["bar"] === "string"
             )
     }`,
   },
@@ -1588,8 +1588,8 @@ testProcessProject(
             (obj !== null &&
                 typeof obj === "object" ||
                 typeof obj === "function") &&
-            Array.isArray(obj.b) &&
-            typeof obj.b[0] === "number"
+            Array.isArray(obj["b"]) &&
+            typeof obj["b"][0] === "number"
         )
     }`,
   },

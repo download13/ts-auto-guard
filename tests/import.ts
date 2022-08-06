@@ -75,12 +75,12 @@ export function isFoo(obj: any): obj is Foo {
         (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-        (obj.target !== null &&
-            typeof obj.target === "object" ||
-            typeof obj.target === "function") &&
-        (typeof obj.target.skipLoadingLibFiles === "undefined" ||
-            obj.target.skipLoadingLibFiles === false ||
-            obj.target.skipLoadingLibFiles === true)
+        (obj["target"] !== null &&
+            typeof obj["target"] === "object" ||
+            typeof obj["target"] === "function") &&
+        (typeof obj["target"]["skipLoadingLibFiles"] === "undefined" ||
+            obj["target"]["skipLoadingLibFiles"] === false ||
+            obj["target"]["skipLoadingLibFiles"] === true)
     )
 }
 `,
@@ -98,7 +98,7 @@ export function isFoo(obj: any): obj is Foo {
         (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-        typeof obj.target === "function"
+        typeof obj["target"] === "function"
     )
 }
 `,
@@ -117,7 +117,7 @@ export function isFoo(obj: any): obj is Foo {
         (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-        obj.target instanceof CompilerOptionsContainer
+        obj["target"] instanceof CompilerOptionsContainer
     )
 }
 `,
@@ -138,9 +138,9 @@ export function isFoo(obj: any): obj is Foo {
         (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-        obj.target instanceof CompilerOptionsContainer &&
-        obj.res instanceof TsConfigResolver &&
-        obj.fs instanceof InMemoryFileSystemHost
+        obj["target"] instanceof CompilerOptionsContainer &&
+        obj["res"] instanceof TsConfigResolver &&
+        obj["fs"] instanceof InMemoryFileSystemHost
     )
 }
 `,
@@ -159,7 +159,7 @@ export function isFoo(obj: any): obj is Foo {
         (obj !== null &&
             typeof obj === "object" ||
             typeof obj === "function") &&
-        obj.dir instanceof Directory
+        obj["dir"] instanceof Directory
     )
 }
 `,
