@@ -40,10 +40,10 @@ import { Person } from './Person'
 export function isPerson(obj: any): obj is Person {
   return (
     typeof obj === 'object' &&
-    typeof obj.name === 'string' &&
-    (typeof obj.age === 'undefined' || typeof obj.age === 'number') &&
-    Array.isArray(obj.children) &&
-    obj.children.every(e => isPerson(e))
+    typeof obj['name'] === 'string' &&
+    (typeof obj['age'] === 'undefined' || typeof obj['age'] === 'number') &&
+    Array.isArray(obj['children']) &&
+    obj['children'].every(e => isPerson(e))
   )
 }
 ```
@@ -77,7 +77,8 @@ Annotate interfaces in your project. ts-auto-guard will generate guards only for
 // my-project/Person.ts
 
 /** @see {isPerson} ts-auto-guard:type-guard */
-export interface Person { // !do not forget to export - only exported types are processed
+export interface Person {
+  // !do not forget to export - only exported types are processed
   name: string
   age?: number
   children: Person[]
@@ -87,7 +88,9 @@ export interface Person { // !do not forget to export - only exported types are 
 The [JSDoc @link tag](https://jsdoc.app/tags-link.html) is also supported: `@see {@link name} ts-auto-guard:type-guard`.
 
 ### Process all types
+
 Use `--export-all` parameter to process all exported types:
+
 ```
 $ ts-auto-guard --export-all 'src/domain/*.ts'
 ```
@@ -145,16 +148,17 @@ ts-auto-guard --guard-file-name="debug"
 Will result in a guard file called `.debug.ts`.
 
 ## Add Import to Source File
+
 ts-auto-guard supports an `ìmport-guards` flag. This flag will add an import statement at the top and a named export at the bottom of the source files for the generated type guards. The `ìmport-guards` flag also optionally accepts a custom name for the import alias, if none is passed then `TypeGuards` is used as a default.
 
 If you would like to override the default behavior and not have the type guards exported from source use the `prevent-export-imported` flag with the `import-guards` flag.
-
 
 ```
 $ ts-auto-guard --import-guards="Guards"
 ```
 
 Will result in the following being added to your source code.
+
 ```ts
 // my-project/Person.ts
 
