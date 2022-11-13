@@ -1,161 +1,22 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import type { Dependencies, IAddDependency } from './types'
+
 import {
-  EnumDeclaration,
-  ExportableNode,
-  ImportDeclarationStructure,
-  InterfaceDeclaration,
+  type ImportDeclarationStructure,
   Node,
   Project,
   SourceFile,
   StructureKind,
   Type,
-  TypeAliasDeclaration,
 } from 'ts-morph'
 import { getNamedImportDeclarations } from './utils/import-declarations'
+import { getReadonlyArrayType, isClassType, isReadonlyArrayType, lowerFirst, reportError, typeToDependency, deleteGuardFile, outFilePath, getTypeGuardName } from './utils/helpers'
+import { type Guardable, isGuardable } from './types/guardable'
+import type {IProcessOptions,IGenerateOptions} from './types/project'
 
-const GENERATED_WARNING = 'WARNING: Do not manually change this file.'
-
-// -- Helpers --
-
-function reportError(message: string, ...args: unknown[]) {
-  console.error(`ERROR: ${message}`, ...args)
-}
-
-function lowerFirst(s: string): string {
-  const first_code_point = s.codePointAt(0)
-  if (first_code_point === undefined) return s
-  const first_letter = String.fromCodePoint(first_code_point)
-  return first_letter.toLowerCase() + s.substr(first_letter.length)
-}
-
-function findExportableNode(type: Type): (ExportableNode & Node) | null {
-  const symbol = type.getSymbol()
-  if (symbol === undefined) {
-    return null
-  }
-
-  return (
-    symbol
-      .getDeclarations()
-      .reduce<Node[]>((acc, node) => [...acc, node, ...node.getAncestors()], [])
-      .filter(Node.isExportable)
-      .find(n => n.isExported()) || null
-  )
-}
-
-function typeToDependency(type: Type, addDependency: IAddDependency): void {
-  const exportable = findExportableNode(type)
-  if (exportable === null) {
-    return
-  }
-
-  const sourceFile = exportable.getSourceFile()
-  const name = exportable.getSymbol()!.getName()
-  const isDefault = exportable.isDefaultExport()
-
-  if (!exportable.isExported()) {
-    reportError(`${name} is not exported from ${sourceFile.getFilePath()}`)
-  }
-
-  addDependency(sourceFile, name, isDefault)
-}
-
-function outFilePath(sourcePath: string, guardFileName: string) {
-  const outPath = sourcePath.replace(
-    /\.(ts|tsx|d\.ts)$/,
-    `.${guardFileName}.ts`
-  )
-  if (outPath === sourcePath)
-    throw new Error(
-      'Internal Error: sourcePath and outFilePath are identical: ' + outPath
-    )
-  return outPath
-}
-
-function deleteGuardFile(sourceFile: SourceFile) {
-  if (sourceFile.getFullText().indexOf(GENERATED_WARNING) >= 0) {
-    sourceFile.delete()
-  } else {
-    console.warn(
-      `${sourceFile.getFilePath()} is named like a guard file, but does not contain the generated header. Consider removing or renaming the file, or change the guardFileName setting.`
-    )
-  }
-}
-
-// https://github.com/dsherret/ts-simple-ast/issues/108#issuecomment-342665874
-function isClassType(type: Type): boolean {
-  if (type.getConstructSignatures().length > 0) {
-    return true
-  }
-
-  const symbol = type.getSymbol()
-  if (symbol == null) {
-    return false
-  }
-
-  for (const declaration of symbol.getDeclarations()) {
-    if (Node.isClassDeclaration(declaration)) {
-      return true
-    }
-    if (
-      Node.isVariableDeclaration(declaration) &&
-      declaration.getType().getConstructSignatures().length > 0
-    ) {
-      return true
-    }
-  }
-
-  return false
-}
-
-function isReadonlyArrayType(type: Type): boolean {
-  const symbol = type.getSymbol()
-  if (symbol === undefined) {
-    return false
-  }
-  return (
-    symbol.getName() === 'ReadonlyArray' && type.getTypeArguments().length === 1
-  )
-}
-
-function getReadonlyArrayType(type: Type): Type | undefined {
-  return type.getTypeArguments()[0]
-}
-
-function getTypeGuardName(
-  child: Guardable,
-  options: IProcessOptions
-): string | null {
-  const jsDocs = child.getJsDocs()
-  for (const doc of jsDocs) {
-    for (const line of doc.getInnerText().split('\n')) {
-      const match = line
-        .trim()
-        .match(/@see\s+(?:{\s*(@link\s*)?(\w+)\s*}\s+)?ts-auto-guard:([^\s]*)/)
-      if (match !== null) {
-        const [, , typeGuardName, command] = match
-        if (command !== 'type-guard') {
-          reportError(`command ${command} is not supported!`)
-          return null
-        }
-        return typeGuardName
-      }
-    }
-  }
-  if (options.exportAll) {
-    const t = child.getType()
-    const symbols = [child, t.getSymbol(), t.getAliasSymbol()]
-    // type aliases have type __type sometimes
-    const name = symbols
-      .filter(x => x && x.getName() !== '__type')[0]
-      ?.getName()
-    if (name) {
-      return 'is' + name
-    }
-  }
-  return null
-}
+import { GENERATED_WARNING} from './constants'
+import { createAddDependency } from './utils/create-add-dependencies'
 
 // -- Main program --
 
@@ -965,55 +826,6 @@ function generateTypeGuard(
 
 // -- Process project --
 
-interface IImports {
-  [exportName: string]: string
-}
-
-type Dependencies = Map<SourceFile, IImports>
-type IAddDependency = (
-  sourceFile: SourceFile,
-  exportName: string,
-  isDefault: boolean
-) => void
-
-function createAddDependency(dependencies: Dependencies): IAddDependency {
-  return function addDependency(sourceFile, name, isDefault) {
-    const alias = name
-    if (isDefault) {
-      name = 'default'
-    }
-    let imports = dependencies.get(sourceFile)
-    if (imports === undefined) {
-      imports = {}
-      dependencies.set(sourceFile, imports)
-    }
-
-    const previousAlias = imports[name]
-    if (previousAlias !== undefined && previousAlias !== alias) {
-      reportError(
-        `Conflicting export alias for "${sourceFile.getFilePath()}": "${alias}" vs "${previousAlias}"`
-      )
-    }
-
-    imports[name] = alias
-  }
-}
-
-export interface IProcessOptions {
-  exportAll?: boolean
-  importGuards?: string
-  preventExportImported?: boolean
-  shortCircuitCondition?: string
-  debug?: boolean
-  guardFileName?: string
-}
-
-export interface IGenerateOptions {
-  paths?: ReadonlyArray<string>
-  project: string
-  processOptions: Readonly<IProcessOptions>
-}
-
 const evaluateFunction = `function evaluate(
   isCorrect: boolean,
   varName: string,
@@ -1041,16 +853,6 @@ export async function generate({
   project.addSourceFilesAtPaths(paths)
   processProject(project, processOptions)
   return project.save()
-}
-
-type Guardable = InterfaceDeclaration | TypeAliasDeclaration | EnumDeclaration
-
-function isGuardable(value: Node): value is Guardable {
-  return (
-    Node.isTypeAliasDeclaration(value) ||
-    Node.isInterfaceDeclaration(value) ||
-    Node.isEnumDeclaration(value)
-  )
 }
 
 interface IRecord {
